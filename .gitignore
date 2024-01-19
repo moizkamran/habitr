@@ -131,3 +131,6 @@ dist
 *.pot
 
 backend/api/__pycache__/
+backend/api/migrations/__pycache__/
+backend/api/migrations/0001_initial.py
+backend/api/migrations
