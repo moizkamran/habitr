@@ -1,6 +1,10 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from rest_framework import generics
+from .models import Habit
+from .serializers import HabitSerializer
 
 # Create your views here.
-def main(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+
+class HabitView(generics.ListCreateAPIView):
+    queryset = Habit.objects.all()
+    serializer_class = HabitSerializer

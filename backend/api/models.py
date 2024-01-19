@@ -1,15 +1,12 @@
 from django.db import models
+from datetime import date
 
 # Create your models here.
 class Habit(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=200)
+    name = models.CharField(max_length=100, default="Habit Name")
+    description = models.CharField(max_length=200, default="A habit description")
     frequency = models.IntegerField(default=1)
-    start_date = models.DateField()
-    goal_date = models.DateField()
+    start_date = models.DateField(default=date(2024, 1, 1))
+    goal_date = models.DateField(default=date(2024, 1, 1))
     completed = models.BooleanField(default=False)
-    streak = models.IntegerField(default=0, null=False)
-
-class Progress(models.Model):
-    habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
-    dates = models.DateField()
+    streak = models.IntegerField(default=0)
