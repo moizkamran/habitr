@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from .models import Habit
 
-class HabitSerializer(serializers.Serializer):
-    class meta:
+class HabitSerializer(serializers.ModelSerializer):
+    class Meta:
         model = Habit
-        fields = ("name", "description", "frequency", "start_date", "goal_date")
+        fields = ("id" ,"name", "description", "frequency", "type",
+                   "start_date", "goal_date", "completed", "streak")
     
     def create(self, validated_data):
         """
