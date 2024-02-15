@@ -1,9 +1,10 @@
 import { Flex, Text } from '@mantine/core';
 import React, { useEffect, useState } from 'react';
 
-const DateRow = () => {
-  const [todaysDate, setTodaysDate] = useState(new Date());
+const DateRow = ({ todaysDate, setTodaysDate }) => {
   const [numDatesToShow, setNumDatesToShow] = useState(calculateNumDatesToShow());
+  const [currentMonth, setCurrentMonth] = useState(todaysDate.getMonth());
+  const [currentYear, setCurrentYear] = useState(todaysDate.getFullYear());
 
   useEffect(() => {
     function handleResize() {
@@ -20,21 +21,32 @@ const DateRow = () => {
     setNumDatesToShow(calculateNumDatesToShow());
   };
 
+  useEffect(() => {
+    // Update currentMonth and currentYear based on todaysDate
+    setCurrentMonth(todaysDate.getMonth());
+    setCurrentYear(todaysDate.getFullYear());
+  }, [todaysDate]);
+
   return (
-    <Flex w={'100%'} justify={'space-between'}>
-      {[...Array(numDatesToShow)].map((_, index) => {
-        const date = new Date();
-        date.setDate(todaysDate.getDate() - Math.floor(numDatesToShow / 2) + index);
-        const isActive = index === Math.floor(numDatesToShow / 2);
-        return (
-          <SingleDate
-            key={index}
-            isActive={isActive}
-            date={date}
-            onClick={() => handleDateClick(date)}
-          />
-        );
-      })}
+    <Flex direction={'column'} align={'center'} mt={10}>
+      <Flex w={'100%'} justify={'space-between'}>
+        {[...Array(numDatesToShow)].map((_, index) => {
+          const date = new Date(currentYear, currentMonth, todaysDate.getDate() - Math.floor(numDatesToShow / 2) + index);
+          const isActive = index === Math.floor(numDatesToShow / 2);
+          return (
+            <SingleDate
+              key={index}
+              isActive={isActive}
+              date={date}
+              onClick={() => handleDateClick(date)}
+            />
+          );
+        })}
+      </Flex>
+      <Text mt={10} c={'darkgrey'}>
+        {todaysDate.toLocaleString('default', { month: 'long' })}{' '}
+        {todaysDate.getFullYear()}
+      </Text>
     </Flex>
   );
 };
