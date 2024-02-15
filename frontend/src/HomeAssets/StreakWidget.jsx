@@ -1,7 +1,21 @@
 import { Flex, Text } from '@mantine/core'
+import { IconHourglassLow } from '@tabler/icons-react';
 import React from 'react'
 
 const StreakWidget = () => {
+    const timeLeftUntilMidnight = () => {
+        const now = new Date();
+        const midnight = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() + 1,
+            0, 0, 0
+        )
+        return midnight - now;
+    }
+    const timeLeft = timeLeftUntilMidnight();
+    const timeLeftInMinutes = Math.floor(timeLeft / 60000);
+    const timeLeftInHours = Math.floor(timeLeftInMinutes / 60);
   return (
     <Flex mt={20} align={'center'} justify={'space-between'} p={5}
     style={{
@@ -25,12 +39,22 @@ const StreakWidget = () => {
 
         }}
         >
-            <Text fz={20} c={'black'}>
+            <Text fz={20} c={'black'} >
                 You are on a streak!
             </Text>
-            <Text fz={15} c={'dimmed'}>
-                5 days
-            </Text>
+            <Flex align={'center'} mt={5} gap={10}>
+                <Text fz={15} c={'dimmed'}>
+                    5 days
+                </Text>
+                <Flex align={'center'} gap={5} bg={'#F9820B'} p={5} style={{
+                    borderRadius: 10,
+                }}>
+                <IconHourglassLow size={20} color={'white'} />
+                <Text fz={15} c={'white'}>
+                {timeLeftInHours} hours left
+                </Text>
+                </Flex>
+            </Flex>
         </Flex>
     </Flex>
   )

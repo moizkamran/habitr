@@ -52,24 +52,36 @@ const DateRow = ({ todaysDate, setTodaysDate }) => {
 };
 
 const SingleDate = ({ isActive, date, onClick }) => {
+    const [isHovered, setIsHovered] = useState(false)
   return (
     <Flex
       direction={'column'}
       align={'center'}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'pointer', 
+    userSelect: 'none'}}
       onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
     >
       <Flex
         w={'50px'}
         h={'50px'}
         bg={isActive ? '#005A99' : 'transparent'}
-        style={{ borderRadius: '50%' }}
+        style={{ borderRadius: '50%', transition: 'all 0.3s',
+        transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+    }}
         align={'center'}
         justify={'center'}
       >
         <Text c={isActive ? 'white' : 'darkgrey'}>{date.getDate()}</Text>
       </Flex>
-      <Text c={isActive ? 'black' : 'darkgrey'}>
+      <Text c={isActive ? 'black' : 'darkgrey'}
+      style={{
+        //move the text up when hovered
+        transform: !isActive && (isHovered ? 'translateY(-5px)' : 'translateY(0)'),
+        transition: 'all 0.3s',
+      }}
+      >
         {date.toLocaleString('default', { weekday: 'short' }).toLowerCase()}
       </Text>
     </Flex>

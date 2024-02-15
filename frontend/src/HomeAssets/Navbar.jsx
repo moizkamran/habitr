@@ -1,5 +1,7 @@
-import { ActionIcon, Flex } from '@mantine/core'
+import { ActionIcon, Flex, Image } from '@mantine/core'
 import { IconMenu, IconUser } from '@tabler/icons-react'
+import fullLogo from '../assets/fullLogo.svg'
+import smallLogo from '../assets/smallLogo.svg'
 import React from 'react'
 
 const Navbar = () => {
@@ -15,6 +17,7 @@ const Navbar = () => {
         >
             <IconMenu size={20} />
         </ActionIcon>
+        <Image src={fullLogo} height={25} width={150} />
         <ActionIcon
             padding={10}
             size={30}
