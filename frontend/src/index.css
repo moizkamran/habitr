@@ -1,17 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Bungee+Outline&family=Outfit:wght@100..900&display=swap');
 
-:root {
-  font-family: "Outfit", sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #151515;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.circle-1{
+    background-color: #0011ff;
+    border-radius: 50%;
+    width: 600px;
+    height: 600px;
+    position: absolute;
+    bottom: 100px;
+    left: -200px;
 }
 
+.circle-1-a{
+    background-color: #ffffff;
+    border-radius: 50%;
+    width: 500px;
+    z-index: 1;
+    height: 500px;
+    position: absolute;
+    bottom: 150px;
+    left: -140px;
+}
