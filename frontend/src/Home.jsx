@@ -6,6 +6,7 @@ import Searchbar from './HomeAssets/Searchbar'
 import DateRow from './HomeAssets/DateRow'
 import CreateHabitButton from './HomeAssets/CreateHabitButton'
 import TodaysHabits from './HomeAssets/TodaysHabits'
+import StreakWidget from './HomeAssets/StreakWidget'
 
 const Home = () => {
     const [searchTerm, setSearchTerm] = useState('')
@@ -33,6 +34,7 @@ const Home = () => {
      todaysDate={todaysDate}
      setTodaysDate={setTodaysDate}
      />
+     <StreakWidget />
      <TodaysHabits />
      <CreateHabitButton />
     </Flex>
