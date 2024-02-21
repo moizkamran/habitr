@@ -7,13 +7,13 @@ class HabitSerializer(serializers.ModelSerializer):
         fields = ("id" ,"name", "description", "frequency", "type",
                    "start_date", "goal_date", "completed", "streak")
     
-    # def create(self, validated_data):
-    #     """
-    #     Create and return a new `Habit` instance, given the validated data.
-    #     """
-    #     return Habit.objects.create(**validated_data)
-    
 class CreateHabitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Habit
+        fields = ("name", "description", "frequency", "type",
+                   "start_date", "goal_date", "completed", "streak")
+
+class UpdateHabitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habit
         fields = ("name", "description", "frequency", "type",
