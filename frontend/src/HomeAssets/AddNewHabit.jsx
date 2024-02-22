@@ -1,6 +1,9 @@
 import { ActionIcon, Divider, Flex, SegmentedControl, SimpleGrid, Text, Textarea } from '@mantine/core'
+import { DateInput } from '@mantine/dates';
 import { IconBolt, IconBook, IconBottleFilled, IconBrandPepsi, IconBurger, IconCheck, IconChevronRight, IconCookieMan, IconGuitarPick, IconHeartRateMonitor, IconMoodPlus, IconPhone, IconPlaylistAdd, IconRun, IconScreenShare, IconSmokingNo, IconSocial, IconSparkles, IconX, IconYoga, IconZeppelin } from '@tabler/icons-react'
 import React, { useState } from 'react'
+import newRequest from '../utils/newRequest';
+import axios from 'axios';
 
 const predefinedHabits = [
     {
@@ -74,7 +77,34 @@ const AddNewHabit = ({setOpen}) => {
     const [selectedFrequency, setSelectedFrequency] = useState(null)
     const [isAddingCustomHabit, setIsAddingCustomHabit] = useState(false)
     const [customHabitName, setCustomHabitName] = useState('')
+    const [startDate, setStartDate] = useState(null)
+    const today = new Date()
+    const [endDate, setEndDate] = useState(null)
     const filteredHabits = predefinedHabits.filter(habit => habit.type === selectedType)
+
+    const habit = {
+        name: customHabitName? customHabitName : selectedHabit?.name,
+        description : `I would like to ${selectedType} ${selectedHabit?.name} ${selectedFrequency} from ${startDate?.toLocaleDateString('en-us')} to ${endDate?.toLocaleDateString('en-us')}`,
+        frequency: selectedFrequency,
+        type: selectedType?.charAt(0).toUpperCase() + selectedType?.slice(1),
+        start_date: startDate?.toISOString().split('T')[0],
+        goal_date: endDate?.toISOString().split('T')[0],
+        completed: false,
+        streak: 0,
+    };
+
+    const handleAddHabit = async () => {
+        console.log(habit)
+        try {
+            const response = await axios.post('http://127.0.0.1:8000/api/create-habit', habit)
+            console.log(response.data)
+            console.log('Habit added successfully')
+            setOpen(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
   return (
     <Flex w={'100%'} h={'100%'}
@@ -167,6 +197,43 @@ const AddNewHabit = ({setOpen}) => {
         radius={'xl'}
         />)}
 
+    {selectedFrequency && (<Flex direction={'column'} mt={20}>
+        <Text fz={30} fw={600} mt={20}>
+            Tell us when you want to start and end.
+        </Text>
+        <Flex mt={10} align={'center'} justify={'center'}>
+            <Text fz={20} c={'dimmed'}>
+                Start date
+            </Text>
+
+            <DateInput 
+            value={startDate}
+            onChange={setStartDate}
+            placeholder={'Select date'}
+            radius={'xl'}
+            error={startDate && startDate < today ? 'Start date cannot be in the past' : null}
+            size='lg'
+            style={{marginLeft: 20}}
+            />
+        </Flex>
+        <Flex mt={10} align={'center'} justify={'center'}>
+            <Text fz={20} c={'dimmed'}>
+                End date
+            </Text>
+
+            <DateInput 
+            value={endDate}
+            onChange={setEndDate}
+            placeholder={'Select date'}
+            radius={'xl'}
+            error={endDate && endDate < startDate ? 'End date cannot be before start date' : null}
+            size='lg'
+            style={{marginLeft: 20}}
+            />
+        </Flex>
+    </Flex>)}
+
+
         {/* Below controllers */}
         <Flex 
         mt={20}
@@ -189,6 +256,7 @@ const AddNewHabit = ({setOpen}) => {
             size={'xl'}
             variant={'light'}
             color={'green'}
+            onClick={handleAddHabit}
             radius={'xl'}
             >
                 <IconCheck size={20} />
