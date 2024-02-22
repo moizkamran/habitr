@@ -18,3 +18,8 @@ class UpdateHabitSerializer(serializers.ModelSerializer):
         model = Habit
         fields = ("name", "description", "frequency", "type",
                    "start_date", "goal_date", "completed", "streak")
+        
+class DeleteHabitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Habit
+        fields = ("id")

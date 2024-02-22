@@ -1,8 +1,9 @@
 import { ActionIcon, Flex, Text } from '@mantine/core'
-import { IconCheck, IconYoga } from '@tabler/icons-react'
+import { IconCheck, IconChessBishop, IconTrash, IconYoga } from '@tabler/icons-react'
+import axios from 'axios'
 import React from 'react'
 
-const TodaysHabits = () => {
+const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
   return (
     <Flex direction={'column'} align={'center'} justify={'center'} gap={20}>
         <Flex justify={'space-between'} w={'100%'}>
@@ -13,14 +14,28 @@ const TodaysHabits = () => {
             see all
             </Text>
         </Flex>
-        <SingleTask />
+        {habits.map((habit, index) => {
+            return (
+                <SingleTask key={index} habit={habit} getHabits={getHabits} />
+            )
+        })}
     </Flex>
   )
 }
 
 export default TodaysHabits
 
-const SingleTask = ({ }) => {
+const SingleTask = ({ habit, getHabits}) => {
+
+    const handleDeleteHabit = async () => {
+        try {
+            const response = await axios.delete(`http://localhost:8000/api/delete-habit/${habit.id}`)
+            getHabits()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
   return (
     <Flex align={'center'} style={{
         border: '1px solid lightgrey',
@@ -39,25 +54,36 @@ const SingleTask = ({ }) => {
                 backgroundColor: 'lightblue',
             }}
             >
-                <IconYoga size={30} color='white'/>
+                <IconChessBishop size={30} color='white'/>
             </div>
             <Flex direction={'column'} ml={20}>
                 <Text fz={20} c={'black'}>
-                    Yoga
+                    {habit.name ? habit.name : 'No name'}
                 </Text>
                 <Text fz={15} c={'dimmed'}>
-                    30 minutes
+                    {habit.frequency ? habit.frequency : 'No frequency'}
                 </Text>
             </Flex>
         </Flex>
-        <ActionIcon
-        size={'xl'}
-        variant={'light'}
-        color={'grey'}
-        radius={'xl'}
-        >
-            <IconCheck size={20} />
-        </ActionIcon>
+        <Flex align={'center'} gap={10}>
+            <ActionIcon
+            size={'xl'}
+            variant={'light'}
+            color={'red'}
+            radius={'xl'}
+            onClick={handleDeleteHabit}
+            >
+                <IconTrash size={20} />
+            </ActionIcon>
+            <ActionIcon
+            size={'xl'}
+            variant={'light'}
+            color={'grey'}
+            radius={'xl'}
+            >
+                <IconCheck size={20} />
+            </ActionIcon>
+        </Flex>
     </Flex>
   )
 }

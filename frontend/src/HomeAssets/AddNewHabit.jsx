@@ -94,7 +94,6 @@ const AddNewHabit = ({setOpen}) => {
     };
 
     const handleAddHabit = async () => {
-        console.log(habit)
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/create-habit', habit)
             console.log(response.data)

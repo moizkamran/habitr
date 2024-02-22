@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Habit
-from .serializers import HabitSerializer, CreateHabitSerializer, UpdateHabitSerializer
+from .serializers import HabitSerializer, CreateHabitSerializer, UpdateHabitSerializer, DeleteHabitSerializer
 from rest_framework.views import APIView
 
 # Create your views here.
@@ -21,7 +21,15 @@ class CreateHabitView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+class DeleteHabitView(APIView):
+    serializer_class = DeleteHabitSerializer
+
+    def delete(self, request, pk, format=None):
+        habit = Habit.objects.get(pk=pk)
+        habit.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 class UpdateHabitView(APIView):
     serializer_class = UpdateHabitSerializer
 

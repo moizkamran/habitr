@@ -16,3 +16,7 @@ class Habit(models.Model):
     streak = models.IntegerField(default=0)
     # could be two types "Quit" or "Start"
     type = models.CharField(max_length=5, choices=HABIT_TYPES)
+
+class HabitCompletion(models.Model):
+    habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
+    completion_date = models.DateField(default=date.today)
