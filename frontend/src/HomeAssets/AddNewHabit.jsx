@@ -70,7 +70,7 @@ const predefinedHabits = [
 ];
 
 
-const AddNewHabit = ({setOpen}) => {
+const AddNewHabit = ({setOpen, getHabits}) => {
 
     const [selectedType, setSelectedType] = useState(null)
     const [selectedHabit, setSelectedHabit] = useState(null)
@@ -99,6 +99,7 @@ const AddNewHabit = ({setOpen}) => {
             console.log(response.data)
             console.log('Habit added successfully')
             setOpen(false)
+            getHabits()
         } catch (error) {
             console.log(error)
         }

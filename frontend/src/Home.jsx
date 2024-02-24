@@ -77,7 +77,9 @@ const Home = () => {
      <TodaysHabits 
      getHabits={getHabits}
      habits={habits} todaysDate={todaysDate}/>
-     <CreateHabitButton />
+     <CreateHabitButton 
+     getHabits={getHabits}
+     />
     </Flex>
   )
 }

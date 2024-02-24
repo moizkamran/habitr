@@ -1,7 +1,9 @@
 import { ActionIcon, Flex, Text } from '@mantine/core'
-import { IconCheck, IconChessBishop, IconTrash, IconYoga } from '@tabler/icons-react'
+import { IconCheck, IconChessBishop, IconCircle, IconCircleFilled, IconTrash, IconYoga } from '@tabler/icons-react'
 import axios from 'axios'
 import React from 'react'
+
+const bg_colors = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#118ab2"]
 
 const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
   return (
@@ -25,8 +27,12 @@ const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
 
 export default TodaysHabits
 
-const SingleTask = ({ habit, getHabits}) => {
+const SingleTask = ({ habit, getHabits }) => {
 
+    const random_bg = Math.floor(Math.random() * bg_colors.length)
+
+    const goal_date = new Date(habit.goal_date)
+    const goal_days_left = Math.floor((goal_date - new Date()) / (1000 * 60 * 60 * 24))
     const handleDeleteHabit = async () => {
         try {
             const response = await axios.delete(`http://localhost:8000/api/delete-habit/${habit.id}`)
@@ -51,7 +57,7 @@ const SingleTask = ({ habit, getHabits}) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: 'lightblue',
+                backgroundColor: bg_colors[random_bg],
             }}
             >
                 <IconChessBishop size={30} color='white'/>
@@ -60,9 +66,21 @@ const SingleTask = ({ habit, getHabits}) => {
                 <Text fz={20} c={'black'}>
                     {habit.name ? habit.name : 'No name'}
                 </Text>
-                <Text fz={15} c={'dimmed'}>
-                    {habit.frequency ? habit.frequency : 'No frequency'}
-                </Text>
+                <Flex align={'center'} gap={10}>
+                    <Text fz={15} c={'dimmed'}>
+                        {habit.frequency ? habit.frequency.charAt(0).toUpperCase() + habit.frequency.slice(1) : 'No frequency'}
+                    </Text>
+                    <IconCircleFilled size={5} color={'black'} />
+                    <Text fz={15} c={'dimmed'}>
+                        {goal_days_left} days left
+                    </Text>
+                    {habit.streak > 0 && (<>
+                    <IconCircleFilled size={5} color={'black'} />
+                    <Text fz={15} c={'dimmed'}>
+                    🔥 {habit?.streak} Streak
+                    </Text>
+                    </>)}
+                </Flex>
             </Flex>
         </Flex>
         <Flex align={'center'} gap={10}>

@@ -3,7 +3,7 @@ import { IconPlus } from '@tabler/icons-react'
 import React, { useState } from 'react'
 import AddNewHabit from './AddNewHabit'
 
-const CreateHabitButton = ({}) => {
+const CreateHabitButton = ({getHabits}) => {
     const [isHovered, setIsHovered] = useState(false)
     const [open, setOpen] = useState(false)
   return (
@@ -15,7 +15,7 @@ const CreateHabitButton = ({}) => {
     fullScreen
     withCloseButton={false}
     >
-       <AddNewHabit setOpen={setOpen}/>
+       <AddNewHabit setOpen={setOpen} getHabits={getHabits}/>
     </Modal>
     <div
     style={{
