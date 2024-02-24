@@ -13,6 +13,7 @@ class Habit(models.Model):
     start_date = models.DateField(default=date(2024, 1, 1))
     goal_date = models.DateField(default=date(2024, 1, 1))
     completed = models.BooleanField(default=False)
+    completions = models.ManyToManyField('HabitCompletion', related_name='completions', blank=True)
     streak = models.IntegerField(default=0)
     # could be two types "Quit" or "Start"
     type = models.CharField(max_length=5, choices=HABIT_TYPES)
