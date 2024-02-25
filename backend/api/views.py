@@ -74,3 +74,13 @@ class HabitCompletionView(generics.CreateAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class HighestStreakHabitView(APIView):
+    def get(self, request, format=None):
+        # Query for the habit with the highest streak
+        try:
+            highest_streak_habit = Habit.objects.latest('streak')
+            serializer = HabitSerializer(highest_streak_habit)
+            return Response(serializer.data)
+        except Habit.DoesNotExist:
+            return Response({"detail": "No habits found."}, status=status.HTTP_404_NOT_FOUND)

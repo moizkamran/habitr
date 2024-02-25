@@ -72,14 +72,11 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
         }
     }, 0);
 
-    console.log(streak)
-
     //check if streak is equal to habit.streak, if not update habit.streak
     if (streak !== habit.streak) {
         axios.put(`http://localhost:8000/api/update-habit-streak/${habit.id}`, {
             streak: streak
         })
-        console.log('streak updated')
     }
 
 

@@ -1,8 +1,25 @@
 import { Flex, Text } from '@mantine/core'
 import { IconHourglassLow } from '@tabler/icons-react';
-import React from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 
 const StreakWidget = () => {
+    const [habitWithHighestStreak, setHabitWithHighestStreak] = useState(null)
+
+    const getHabitWithHighestStreak = async ()  => {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/highest-streak-habit')
+            setHabitWithHighestStreak(response.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        getHabitWithHighestStreak()
+    }
+    , [])
+
     const timeLeftUntilMidnight = () => {
         const now = new Date();
         const midnight = new Date(
@@ -44,7 +61,7 @@ const StreakWidget = () => {
             </Text>
             <Flex align={'center'} mt={5} gap={10}>
                 <Text fz={15} c={'dimmed'}>
-                    5 days
+                    {habitWithHighestStreak ? habitWithHighestStreak.streak : 0} days
                 </Text>
                 <Flex align={'center'} gap={5} bg={'#F9820B'} p={5} style={{
                     borderRadius: 10,
