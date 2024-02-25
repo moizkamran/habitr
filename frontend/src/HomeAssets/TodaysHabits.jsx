@@ -6,8 +6,6 @@ import React, { useState } from 'react'
 const bg_colors = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#118ab2"]
 
 const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
-    console.log(todaysDate)
-
     const filteredHabits = habits.filter(habit => {
         const start_date = new Date(habit.start_date)
         const goal_date = new Date(habit.goal_date)
@@ -45,9 +43,6 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
     const completions = habit.completions
     const [showHidden, setShowHidden] = useState(false)
 
-    //from completions array, check if it has a completion for today
-    //if yes, display a checkmark
-    //if no, display a circle
     const todaysCompletion = completions.find(completion => {
         const completion_date = new Date(completion.completion_date)
         return completion_date.toDateString() === todaysDate.toDateString()
@@ -57,6 +52,27 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
     const localDate = new Date(todaysDate.getTime() - timezoneOffsetMs); // Adjust date to local timezone
 
     const formattedDate = localDate.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+
+    //check if a streak could be formed by if completions dates has more than 2 consecutive dates
+    const sortedCompletions = completions.sort((a, b) => {
+        const dateA = new Date(a.completion_date);
+        const dateB = new Date(b.completion_date);
+        return dateA - dateB;
+    });
+
+    const streak = sortedCompletions.reduce((acc, completion, index, completions) => {
+        if (index === 0) return 1;
+        const completion_date = new Date(completion.completion_date);
+        const prev_completion_date = new Date(completions[index - 1].completion_date);
+        const diff = completion_date - prev_completion_date;
+        if (diff === 86400000) {
+            return acc + 1;
+        } else {
+            return acc;
+        }
+    }, 0);
+
+    console.log(streak)
 
 
     const handleCompletion = async () => {
@@ -114,10 +130,10 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
                     <Text fz={15} c={'dimmed'}>
                         {goal_days_left} days left
                     </Text>
-                    {habit.streak > 0 && (<>
+                    {streak > 0 && (<>
                     <IconCircleFilled size={5} color={'black'} />
                     <Text fz={15} c={'dimmed'}>
-                    🔥 {habit?.streak} Streak
+                    🔥 {streak} Streak
                     </Text>
                     </>)}
                 </Flex>
