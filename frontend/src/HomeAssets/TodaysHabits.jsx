@@ -15,25 +15,62 @@ const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
         // Parse start_date without time component
         const start_date = new Date(habit.start_date);
         start_date.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
-
+    
         const goal_date = new Date(habit.goal_date);
-
+    
         // Remove time component from todaysDate
         const todayWithoutTime = new Date(todaysDate);
         todayWithoutTime.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
-
+    
         // Keep the previous filtering logic
-        return (
+        let meetsFilteringCriteria =
             start_date <= todayWithoutTime &&
             goal_date >= todayWithoutTime &&
             !habit.completions.some(completion => {
                 const completion_date = new Date(completion.completion_date);
                 completion_date.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
                 return completion_date.getTime() === todayWithoutTime.getTime();
-            })
-        );
-    });
+            });
     
+        // Additional logic for weekly and monthly habits
+        if (meetsFilteringCriteria) {
+            switch (habit.frequency) {
+                case "daily":
+                    // No additional filtering needed for daily habits
+                    break;
+                case "weekly":
+                    // Check if the habit has any completion date in the current week
+                    const currentWeekCompletions = habit.completions.filter(completion => {
+                        const completionDate = new Date(completion.completion_date);
+                        const completionWeekStart = new Date(todayWithoutTime);
+                        completionWeekStart.setDate(todayWithoutTime.getDate() - todayWithoutTime.getDay()); // Start of the week
+                        completionWeekStart.setHours(0, 0, 0, 0);
+                        const completionWeekEnd = new Date(completionWeekStart);
+                        completionWeekEnd.setDate(completionWeekStart.getDate() + 6); // End of the week
+                        completionWeekEnd.setHours(23, 59, 59, 999);
+                        return completionDate >= completionWeekStart && completionDate <= completionWeekEnd;
+                    });
+    
+                    // If the habit has no completion in the current week, it meets the filtering criteria
+                    meetsFilteringCriteria = currentWeekCompletions.length === 0;
+                    break;
+                case "monthly":
+                    // Check if the habit has any completion date in the current month
+                    const currentMonthCompletions = habit.completions.filter(completion => {
+                        const completionDate = new Date(completion.completion_date);
+                        return completionDate.getMonth() === todayWithoutTime.getMonth();
+                    });
+    
+                    // If the habit has no completion in the current month, it meets the filtering criteria
+                    meetsFilteringCriteria = currentMonthCompletions.length === 0;
+                    break;
+                default:
+                    break;
+            }
+        }
+    
+        return meetsFilteringCriteria;
+    });    
 
   return (
     <Flex direction={'column'} align={'center'} justify={'center'} gap={20}>
