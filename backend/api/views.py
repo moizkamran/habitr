@@ -6,8 +6,6 @@ from .models import Habit, HabitCompletion
 from .serializers import HabitSerializer, CreateHabitSerializer, UpdateHabitSerializer, DeleteHabitSerializer, HabitCompletionSerializer, UpdateHabitStreakSerializer, UpdateHabitCompletionSerializer
 from rest_framework.views import APIView
 
-# Create your views here.
-
 class HabitView(generics.ListCreateAPIView):
     queryset = Habit.objects.prefetch_related('completions')  # Prefetch related completions
     serializer_class = HabitSerializer
@@ -68,13 +66,14 @@ class HabitCompletionView(generics.CreateAPIView):
     serializer_class = HabitCompletionSerializer
 
     def post(self, request, *args, **kwargs):
-        habit_id = request.data.get('habit')  # Assuming 'habit' is the habit ID
+        habit_id = request.data.get('habit') 
         completion_date = request.data.get('completion_date')
 
         if habit_id is None:
             return Response({"habit": ["This field is required."]}, status=status.HTTP_400_BAD_REQUEST)
 
         # Check if completion date already exists for the habit
+        # Better safe than sorry
         if HabitCompletion.objects.filter(habit_id=habit_id, completion_date=completion_date).exists():
             return Response({"detail": "Completion date already exists for this habit."},
                             status=status.HTTP_400_BAD_REQUEST)

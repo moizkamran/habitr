@@ -15,15 +15,23 @@ const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
         // Parse start_date without time component
         const start_date = new Date(habit.start_date);
         start_date.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
-    
+
         const goal_date = new Date(habit.goal_date);
-        
+
         // Remove time component from todaysDate
         const todayWithoutTime = new Date(todaysDate);
         todayWithoutTime.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
-    
+
         // Keep the previous filtering logic
-        return start_date <= todayWithoutTime && goal_date >= todayWithoutTime;
+        return (
+            start_date <= todayWithoutTime &&
+            goal_date >= todayWithoutTime &&
+            !habit.completions.some(completion => {
+                const completion_date = new Date(completion.completion_date);
+                completion_date.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
+                return completion_date.getTime() === todayWithoutTime.getTime();
+            })
+        );
     });
     
 
@@ -51,7 +59,7 @@ const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
         {/* If no tasks show nothing for today, relax! */}
         {filteredHabits.length === 0 && (
             <Text mt={20} fz={20} c={'dimmed'}>
-                Nothing for today, relax!
+                All done, throw a party!
             </Text>
         )}
         {filteredHabits.map((habit, index) => {
@@ -68,7 +76,11 @@ export default TodaysHabits
 
 const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
 
-    const random_bg = Math.floor(Math.random() * bg_colors.length)
+    const [randomBgColor, setRandomBgColor] = useState(() => {
+        // Generate random background color once when component mounts
+        return bg_colors[Math.floor(Math.random() * bg_colors.length)];
+      });
+      
     const completions = habit.completions
     const [showHidden, setShowHidden] = useState(false)
 
@@ -157,6 +169,8 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
     const goal_days_left = Math.floor((goal_date - todaysDate) / (1000 * 60 * 60 * 24))
     const handleDeleteHabit = async () => {
         try {
+            const confrim = window.confirm('Are you sure you want to delete this habit?')
+            if (!confrim) return
             const response = await axios.delete(`http://localhost:8000/api/delete-habit/${habit.id}`)
             getHabits()
         } catch (error) {
@@ -179,7 +193,7 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: bg_colors[random_bg],
+                backgroundColor: randomBgColor,
             }}
             >
                 <IconChessBishop size={30} color='white'/>

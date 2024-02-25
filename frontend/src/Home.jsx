@@ -8,6 +8,7 @@ import CreateHabitButton from './HomeAssets/CreateHabitButton'
 import TodaysHabits from './HomeAssets/TodaysHabits'
 import StreakWidget from './HomeAssets/StreakWidget'
 import axios from 'axios'
+import CompletedTodaysHabits from './HomeAssets/CompletedTodaysHabits'
 
 const welcomeTexts = [
   'Ready to slay, fam? ',
@@ -75,6 +76,9 @@ const Home = () => {
      />
      <StreakWidget />
      <TodaysHabits 
+     getHabits={getHabits}
+     habits={habits} todaysDate={todaysDate}/>
+     <CompletedTodaysHabits 
      getHabits={getHabits}
      habits={habits} todaysDate={todaysDate}/>
      <CreateHabitButton 
