@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Habit
+from .models import Habit, HabitCompletion
 from .serializers import HabitSerializer, CreateHabitSerializer, UpdateHabitSerializer, DeleteHabitSerializer, HabitCompletionSerializer
 from rest_framework.views import APIView
 
@@ -47,12 +47,18 @@ class HabitCompletionView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         habit_id = request.data.get('habit')  # Assuming 'habit' is the habit ID
+        completion_date = request.data.get('completion_date')
+
         if habit_id is None:
             return Response({"habit": ["This field is required."]}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check if completion date already exists for the habit
+        if HabitCompletion.objects.filter(habit_id=habit_id, completion_date=completion_date).exists():
+            return Response({"detail": "Completion date already exists for this habit."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            # Set the habit_id before saving the serializer
             serializer.validated_data['habit_id'] = habit_id
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
