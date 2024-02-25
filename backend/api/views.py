@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Habit, HabitCompletion
-from .serializers import HabitSerializer, CreateHabitSerializer, UpdateHabitSerializer, DeleteHabitSerializer, HabitCompletionSerializer, UpdateHabitStreakSerializer
+from .serializers import HabitSerializer, CreateHabitSerializer, UpdateHabitSerializer, DeleteHabitSerializer, HabitCompletionSerializer, UpdateHabitStreakSerializer, UpdateHabitCompletionSerializer
 from rest_framework.views import APIView
 
 # Create your views here.
@@ -48,6 +48,17 @@ class UpdateHabitStreakView(APIView):
     def put(self, request, pk, format=None):
         habit = Habit.objects.get(pk=pk)
         serializer = UpdateHabitStreakSerializer(habit, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UpdateHabitCompletionView(APIView):
+    serializer_class = UpdateHabitCompletionSerializer
+
+    def put(self, request, pk, format=None):
+        habit = Habit.objects.get(pk=pk)
+        serializer = UpdateHabitCompletionSerializer(habit, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

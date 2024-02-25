@@ -63,12 +63,11 @@ const StreakWidget = () => {
                 <Text fz={15} c={'dimmed'}>
                     {habitWithHighestStreak ? habitWithHighestStreak.streak : 0} days
                 </Text>
-                <Flex align={'center'} gap={5} bg={'#F9820B'} p={5} style={{
+                <Flex align={'center'} gap={5} bg={'#F9820B'} p={"0px 15px"} style={{
                     borderRadius: 10,
                 }}>
-                <IconHourglassLow size={20} color={'white'} />
                 <Text fz={15} c={'white'}>
-                {timeLeftInHours} hours left
+                    {habitWithHighestStreak?.name}
                 </Text>
                 </Flex>
             </Flex>

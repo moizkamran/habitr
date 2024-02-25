@@ -34,6 +34,11 @@ class UpdateHabitStreakSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habit
         fields = ("streak",)
+
+class UpdateHabitCompletionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Habit
+        fields = ("completed",)
         
 class DeleteHabitSerializer(serializers.ModelSerializer):
     class Meta:

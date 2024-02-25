@@ -2,10 +2,15 @@ import { ActionIcon, Flex, Text } from '@mantine/core'
 import { IconCheck, IconChessBishop, IconChevronCompactLeft, IconChevronLeft, IconCircle, IconCircleFilled, IconTrash, IconYoga } from '@tabler/icons-react'
 import axios from 'axios'
 import React, { useState } from 'react'
+import Confetti from 'react-confetti'
+import { useViewportSize } from '@mantine/hooks'
 
 const bg_colors = ["#ef476f", "#ffd166", "#06d6a0", "#118ab2", "#118ab2"]
 
 const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
+    const { width, height } = useViewportSize()
+    const [callForConfetti, setCallForConfetti] = useState(false)
+
     const filteredHabits = habits.filter(habit => {
         const start_date = new Date(habit.start_date)
         const goal_date = new Date(habit.goal_date)
@@ -17,6 +22,17 @@ const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
 
   return (
     <Flex direction={'column'} align={'center'} justify={'center'} gap={20}>
+        {callForConfetti && (<Confetti
+      width={width}
+      height={height}
+      numberOfPieces={100}
+      recycle={false}
+      initialVelocityX={5}
+      initialVelocityY={5}
+      friction={0.99}
+      gravity={0.1}
+      tweenDuration={1000}
+      />)}
         <Flex justify={'space-between'} w={'100%'}>
             <Text mt={20} fz={20} c={'black'}>
             Tasks for today
@@ -25,9 +41,15 @@ const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
             see all
             </Text>
         </Flex>
+        {/* If no tasks show nothing for today, relax! */}
+        {filteredHabits.length === 0 && (
+            <Text mt={20} fz={20} c={'dimmed'}>
+                Nothing for today, relax!
+            </Text>
+        )}
         {filteredHabits.map((habit, index) => {
             return (
-                <SingleTask key={index} todaysDate={todaysDate}
+                <SingleTask key={index} todaysDate={todaysDate} setCallForConfetti={setCallForConfetti}
                 habit={habit} getHabits={getHabits} />
             )
         })}
@@ -37,7 +59,7 @@ const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
 
 export default TodaysHabits
 
-const SingleTask = ({ habit, getHabits, todaysDate }) => {
+const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
 
     const random_bg = Math.floor(Math.random() * bg_colors.length)
     const completions = habit.completions
@@ -78,6 +100,38 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
             streak: streak
         })
     }
+
+    //check if the habit's goal has been reached by checking if the streak is equal to the number of goal days, first calculate the number of days between the start date and the goal date
+    const start_date = new Date(habit.start_date);
+    const goal_date1 = new Date(habit.goal_date);
+    const goal_days = Math.floor((goal_date1 - start_date) / (1000 * 60 * 60 * 24));
+
+    const handleMarkAsComplete = async () => {
+        try {
+            axios.put(`http://localhost:8000/api/update-habit-completion/${habit.id}`, {
+                completed: true
+            })
+            getHabits()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    //if the streak is equal to the number of goal days, update the habit's completed field to true
+    if (streak === goal_days) {
+        //check if the habit has already been completed
+        if (!habit.completed) {
+            setCallForConfetti(true)
+            handleMarkAsComplete()
+        }
+        //wait for 5 seconds before setting the call for confetti to false
+        setTimeout(() => {
+            setCallForConfetti(false)
+        }, 5000);
+        console.log('habit completed')
+    }
+
+    
 
 
     const handleCompletion = async () => {
