@@ -82,13 +82,23 @@ const AddNewHabit = ({setOpen, getHabits}) => {
     const [endDate, setEndDate] = useState(null)
     const filteredHabits = predefinedHabits.filter(habit => habit.type === selectedType)
 
+    const timezoneOffsetMs_ST = (startDate?.getTimezoneOffset() || 0) * 60 * 1000; // Get timezone offset in milliseconds
+    const localDate_ST = new Date((startDate?.getTime() || 0) - timezoneOffsetMs_ST); // Adjust date to local timezone
+
+    const formattedDate_ST = localDate_ST?.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+    
+    const timezoneOffsetMs_GT = (endDate?.getTimezoneOffset() || 0) * 60 * 1000; // Get timezone offset in milliseconds
+    const localDate_GT = new Date((endDate?.getTime() || 0) - timezoneOffsetMs_GT); // Adjust date to local timezone
+
+    const formattedDate_GT = localDate_GT?.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+
     const habit = {
         name: customHabitName? customHabitName : selectedHabit?.name,
         description : `I would like to ${selectedType} ${selectedHabit?.name} ${selectedFrequency} from ${startDate?.toLocaleDateString('en-us')} to ${endDate?.toLocaleDateString('en-us')}`,
         frequency: selectedFrequency,
         type: selectedType?.charAt(0).toUpperCase() + selectedType?.slice(1),
-        start_date: startDate?.toISOString().split('T')[0],
-        goal_date: endDate?.toISOString().split('T')[0],
+        start_date: formattedDate_ST,
+        goal_date: formattedDate_GT,
         completed: false,
         streak: 0,
     };

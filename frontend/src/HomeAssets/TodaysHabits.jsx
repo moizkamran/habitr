@@ -12,13 +12,20 @@ const TodaysHabits = ({ todaysDate, habits, getHabits }) => {
     const [callForConfetti, setCallForConfetti] = useState(false)
 
     const filteredHabits = habits.filter(habit => {
-        const start_date = new Date(habit.start_date)
-        const goal_date = new Date(habit.goal_date)
-        const today = todaysDate
-
-        return start_date <= today && goal_date >= today
-    }
-    )
+        // Parse start_date without time component
+        const start_date = new Date(habit.start_date);
+        start_date.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
+    
+        const goal_date = new Date(habit.goal_date);
+        
+        // Remove time component from todaysDate
+        const todayWithoutTime = new Date(todaysDate);
+        todayWithoutTime.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0
+    
+        // Keep the previous filtering logic
+        return start_date <= todayWithoutTime && goal_date >= todayWithoutTime;
+    });
+    
 
   return (
     <Flex direction={'column'} align={'center'} justify={'center'} gap={20}>
@@ -118,7 +125,7 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
     }
 
     //if the streak is equal to the number of goal days, update the habit's completed field to true
-    if (streak === goal_days) {
+    if (streak === goal_days + 1) {
         //check if the habit has already been completed
         if (!habit.completed) {
             setCallForConfetti(true)
