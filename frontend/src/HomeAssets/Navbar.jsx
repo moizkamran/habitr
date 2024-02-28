@@ -1,10 +1,10 @@
 import { ActionIcon, Flex, Image } from '@mantine/core'
-import { IconMenu, IconUser } from '@tabler/icons-react'
+import { IconMenu, IconUser, IconX } from '@tabler/icons-react'
 import fullLogo from '../assets/fullLogo.svg'
 import smallLogo from '../assets/smallLogo.svg'
 import React from 'react'
 
-const Navbar = () => {
+const Navbar = ({type, typeClose}) => {
   return (
     <Flex miw={"100%"} align={'center'} justify={'space-between'}>
         <ActionIcon
@@ -24,9 +24,10 @@ const Navbar = () => {
             radius={'50%'}
             variant={'light'}
             color={'gray'}
+            onClick={() => typeClose(false)}
             style={{ cursor: 'pointer' }}
         >
-            <IconUser size={20} />
+            {type !== 'close' ? (<IconUser size={20} />) : (<IconX size={20} />)}
         </ActionIcon>
     </Flex>
   )

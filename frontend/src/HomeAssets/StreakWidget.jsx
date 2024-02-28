@@ -38,6 +38,7 @@ const StreakWidget = () => {
     style={{
         borderRadius: 20,
         border: '2px solid #F9820B',
+        backgroundColor: '#FFEBD8',
     
     }}
     >
@@ -56,8 +57,8 @@ const StreakWidget = () => {
 
         }}
         >
-            <Text fz={20} c={'black'} >
-                You are on a streak!
+            <Text fz={20} c={'black'} fw={500}>
+                You're longest streak is
             </Text>
             <Flex align={'center'} mt={5} gap={10}>
                 <Text fz={15} c={'dimmed'}>
