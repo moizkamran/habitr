@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HabitView, CreateHabitView, UpdateHabitView, DeleteHabitView, HabitCompletionView, UpdateHabitStreakView, HighestStreakHabitView, UpdateHabitCompletionView
+from .views import HabitView, CreateHabitView, UpdateHabitView, DeleteHabitView, HabitCompletionView, UpdateHabitStreakView, HighestStreakHabitView, UpdateHabitCompletionView, StruggledHabitByMonthView
 
 urlpatterns = [
     path("habit", HabitView.as_view()),
@@ -9,5 +9,7 @@ urlpatterns = [
     path("update-habit-completion/<int:pk>", UpdateHabitCompletionView.as_view()),
     path("delete-habit/<int:pk>", DeleteHabitView.as_view()),
     path("habit-completion", HabitCompletionView.as_view()),
-    path("highest-streak-habit", HighestStreakHabitView.as_view())
+    path("highest-streak-habit", HighestStreakHabitView.as_view()),
+    path("struggled-habit/<int:year>/<int:month>", StruggledHabitByMonthView.as_view()),  # Endpoint for struggled habit by month
+
 ]

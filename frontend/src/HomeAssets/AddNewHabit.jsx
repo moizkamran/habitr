@@ -100,6 +100,7 @@ const AddNewHabit = ({setOpen, getHabits}) => {
         start_date: formattedDate_ST,
         goal_date: formattedDate_GT,
         completed: false,
+        completions: [],
         streak: 0,
     };
 

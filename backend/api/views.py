@@ -2,6 +2,9 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
+from datetime import datetime, timedelta
+from django.db.models import Count, F, ExpressionWrapper, DecimalField
+from django.db.models.functions import Coalesce, ExtractDay
 from .models import Habit, HabitCompletion
 from .serializers import HabitSerializer, CreateHabitSerializer, UpdateHabitSerializer, DeleteHabitSerializer, HabitCompletionSerializer, UpdateHabitStreakSerializer, UpdateHabitCompletionSerializer
 from rest_framework.views import APIView
@@ -9,7 +12,6 @@ from rest_framework.views import APIView
 class HabitView(generics.ListCreateAPIView):
     queryset = Habit.objects.prefetch_related('completions')  # Prefetch related completions
     serializer_class = HabitSerializer
-
 
 class CreateHabitView(APIView):
     serializer_class = CreateHabitSerializer
@@ -94,3 +96,55 @@ class HighestStreakHabitView(APIView):
             return Response(serializer.data)
         except Habit.DoesNotExist:
             return Response({"detail": "No habits found."}, status=status.HTTP_404_NOT_FOUND)
+        
+class StruggledHabitByMonthView(APIView):
+    def get(self, request, month, year, format=None):
+        # Validate input month and year
+        try:
+            month = int(month)
+            year = int(year)
+        except ValueError:
+            return Response({"detail": "Invalid month or year."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Calculate start and end dates for the given month and year
+        start_date = datetime(year, month, 1)
+        end_date = start_date.replace(day=1, month=month+1) - timedelta(days=1)
+
+        # Query for habits active during the given month and year
+        habits = Habit.objects.filter(start_date__lte=start_date, goal_date__gte=end_date)
+
+        # Check if there are any habits available for the specified month and year
+        if not habits:
+            return Response({"detail": "No habits found for the specified month and year."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Initialize a dictionary to store completion counts and completion rates for each habit
+        habit_completion_info = {}
+
+        # Loop through habits and calculate completion counts and rates within the specified month
+        for habit in habits:
+            completions_within_month = habit.completions.filter(completion_date__gte=start_date, completion_date__lte=end_date).count()
+            expected_days = (end_date - start_date).days + 1
+            completion_rate = completions_within_month / expected_days * 100 if expected_days > 0 else 0
+            habit_completion_info[habit] = {"completions": completions_within_month, "rate": completion_rate}
+
+        # Check if there are any completion info available
+        if not habit_completion_info:
+            return Response({"detail": "No completion info found for habits within the specified month and year."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Find the habit with the lowest completion count
+        struggled_habit, struggled_info = min(habit_completion_info.items(), key=lambda x: x[1]["completions"])
+        struggled_habit_completions = struggled_info["completions"]
+        struggled_habit_rate = struggled_info["rate"]
+        
+        # Calculate the rank of the struggled habit among all habits
+        struggled_habit_rank = sum(1 for habit_info in habit_completion_info.values() if habit_info["completions"] < struggled_habit_completions) + 1
+
+        # Create the reason for the most struggled habit
+        reason = f"The habit '{struggled_habit.name}' has the lowest completion count of {struggled_habit_completions} out of expected {expected_days}, thus a completion rate of {struggled_habit_rate:.2f}%. "
+        reason += f"It ranked lowest of all of {len(habit_completion_info)} habits during the entire month."
+
+        # Serialize the struggled habit
+        serializer = HabitSerializer(struggled_habit)
+        
+        # Return the struggled habit along with the reason
+        return Response({"habit": serializer.data, "reason": reason})
