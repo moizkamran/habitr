@@ -144,8 +144,19 @@ class StruggledHabitByMonthView(APIView):
         reason = f"The habit '{struggled_habit.name}' has the lowest completion count of {struggled_habit_completions} out of expected {expected_days}, thus a completion rate of {struggled_habit_rate:.2f}%. "
         reason += f"It ranked lowest of all of {len(habit_completion_info)} habits during the entire month."
 
+        # Overall completion rate for the month
+        overall_completions = sum(habit_info["completions"] for habit_info in habit_completion_info.values())
+        overall_expected_days = (end_date - start_date).days + 1
+        overall_completion_rate = overall_completions / overall_expected_days * 100 if overall_expected_days > 0 else 0
+
+        # Number of all habits
+        number_of_habits = len(habit_completion_info)
+
+        # Number of habits with 100% completion rate
+        number_of_habits_100 = sum(1 for habit_info in habit_completion_info.values() if habit_info["rate"] == 100)
+
         # Serialize the struggled habit
         serializer = HabitSerializer(struggled_habit)
         
         # Return the struggled habit along with the reason
-        return Response({"habit": serializer.data, "reason": reason})
+        return Response({"habit": serializer.data, "reason": reason, "overall_completion_rate": overall_completion_rate, "struggled_habit_rank": struggled_habit_rank, "number_of_habits": number_of_habits, "number_of_habits_100": number_of_habits_100})
