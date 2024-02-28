@@ -129,7 +129,7 @@ const AddNewHabit = ({setOpen, getHabits}) => {
         <Flex direction={'row'} mt={20} align={'center'} gap={5}>
             <IconChevronRight size={30} color={'black'} />
             <Text fz={23} fw={500}>
-                I want to {selectedType}{selectedHabit ? ` ${selectedHabit.name.toLowerCase()}` : '...'} {selectedFrequency ? ` ${selectedFrequency}` : '...'}
+                I want to {selectedType}{selectedHabit && !customHabitName ? ` ${selectedHabit?.name?.toLowerCase()}` : ''} {customHabitName && customHabitName} {selectedFrequency ? ` ${selectedFrequency}` : '...'}
             </Text>
         </Flex>
         <SegmentedControl 
