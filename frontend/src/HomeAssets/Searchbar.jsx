@@ -1,6 +1,6 @@
 import { Flex, Kbd, Modal, Text, TextInput, rem } from '@mantine/core'
 import { Spotlight, spotlight } from '@mantine/spotlight';
-import { IconDashboard, IconFileText, IconHome, IconLifebuoy, IconQuestionMark, IconSearch } from '@tabler/icons-react'
+import { IconBrain, IconDashboard, IconFileText, IconHome, IconLifebuoy, IconQuestionMark, IconSearch } from '@tabler/icons-react'
 import React, { useState } from 'react'
 import HabitStruggle from './HabitStruggle';
 
@@ -22,6 +22,13 @@ const actions = [
     description: 'Visit documentation to lean more about all features',
     onClick: () => console.log('Documentation'),
     leftSection: <IconFileText style={{ width: rem(24), height: rem(24) }} stroke={1.5} />,
+  },
+  {
+    id: 'habit-analysis',
+    label: 'Habit analysis',
+    description: 'Get an overview of your progress',
+    onClick: () => setHabitStruggleOpen(true),
+    leftSection: <IconBrain style={{ width: rem(24), height: rem(24) }} stroke={1.5} />,
   },
   {
     id: 'habit-struggle',
@@ -69,7 +76,7 @@ const actions = [
     mt={20}>
       <Flex align={'center'} gap={5}>
         <IconSearch size={30} color={'#F9820B'} />
-        <Text c={'dimmed'} fz={19}>
+        <Text c={'dimmed'} fz={16}>
           Search for habits, ask for help, or get tips!
         </Text>
       </Flex>

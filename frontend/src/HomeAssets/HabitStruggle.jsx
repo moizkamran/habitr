@@ -75,7 +75,8 @@ const HabitStruggle = ({setHabitStruggleOpen}) => {
                 top: expanded ? 530 : 240,
                 left: 0,
                 right: 0,
-                transition: '0.3s ease-in-out'
+                transition: '0.3s ease-in-out',
+                paddingBottom: 20,
             }}
             >
             <Text mt={20} fz={30} fw={600} ta={'left'}>
