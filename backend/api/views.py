@@ -111,7 +111,8 @@ class StruggledHabitByMonthView(APIView):
         end_date = start_date.replace(day=1, month=month+1) - timedelta(days=1)
 
         # Query for habits active during the given month and year
-        habits = Habit.objects.filter(start_date__lte=start_date, goal_date__gte=end_date)
+        habits = Habit.objects.filter(start_date__lte=end_date, goal_date__gte=start_date)
+
 
         # Check if there are any habits available for the specified month and year
         if not habits:
