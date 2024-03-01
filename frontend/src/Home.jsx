@@ -9,6 +9,7 @@ import TodaysHabits from './HomeAssets/TodaysHabits'
 import StreakWidget from './HomeAssets/StreakWidget'
 import axios from 'axios'
 import CompletedTodaysHabits from './HomeAssets/CompletedTodaysHabits'
+import { IconWifiOff } from '@tabler/icons-react'
 
 const welcomeTexts = [
   'Ready to slay, fam? ',
@@ -47,6 +48,7 @@ const Home = () => {
     const [searchTerm, setSearchTerm] = useState('')
     const [habits, setHabits] = useState([]) // [habit1, habit2, habit3, ...
     const [todaysDate, setTodaysDate] = useState(new Date());
+    const [error, setError] = useState(null)
     const randomWelcomeText = Math.floor(Math.random() * welcomeTexts.length)
 
     const getHabits = async () => {
@@ -56,6 +58,7 @@ const Home = () => {
         console.log(response.data)
       } catch (error) {
         console.log(error)
+        setError(error)
       }
     }
 
@@ -74,16 +77,26 @@ const Home = () => {
      todaysDate={todaysDate}
      setTodaysDate={setTodaysDate}
      />
-     <StreakWidget />
-     <TodaysHabits 
+     {!error &&(<StreakWidget />)}
+    {!error && (<TodaysHabits 
+    getHabits={getHabits}
+    habits={habits} todaysDate={todaysDate}/>)}
+     {!error && (<CompletedTodaysHabits 
      getHabits={getHabits}
-     habits={habits} todaysDate={todaysDate}/>
-     <CompletedTodaysHabits 
-     getHabits={getHabits}
-     habits={habits} todaysDate={todaysDate}/>
+     habits={habits} todaysDate={todaysDate}/>)}
      <CreateHabitButton 
      getHabits={getHabits}
      />
+     {error ? (
+      <Flex direction={'column'} mt={50}
+      align={'center'} justify={'center'}>
+
+        <IconWifiOff size={100} color={'lightgrey'} />
+        <Text c={'dimmed'} mt={10} ta={'center'}>
+          It seems you are offline, please check your internet connection.
+        </Text>
+      </Flex>
+     ) : ''}
     </Flex>
   )
 }
