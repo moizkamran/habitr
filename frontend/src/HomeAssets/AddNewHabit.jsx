@@ -4,6 +4,7 @@ import { IconBolt, IconBook, IconBottleFilled, IconBrandPepsi, IconBurger, IconC
 import React, { useState } from 'react'
 import newRequest from '../utils/newRequest';
 import axios from 'axios';
+import Navbar from './Navbar';
 
 const predefinedHabits = [
     {
@@ -119,8 +120,9 @@ const AddNewHabit = ({setOpen, getHabits}) => {
 
   return (
     <Flex w={'100%'} h={'100%'}
-    p={40} direction={'column'}>
-        <Text fz={30} fw={600}>
+    direction={'column'}>
+        <Navbar type={'close'} typeClose={setOpen}/>
+        <Text fz={30} fw={600} mt={20}>
             Add a new habit
         </Text>
         <Text c={'dimmed'} mt={5}>

@@ -3,10 +3,12 @@ import { Spotlight, spotlight } from '@mantine/spotlight';
 import { IconBrain, IconDashboard, IconFileText, IconHome, IconLifebuoy, IconQuestionMark, IconSearch } from '@tabler/icons-react'
 import React, { useState } from 'react'
 import HabitStruggle from './HabitStruggle';
+import MyHabits from './MyHabits';
 
 
 const Searchbar = () => {
   const [HabitStruggleOpen, setHabitStruggleOpen] = useState(false)
+  const [myHabits, setMyHabits] = useState(false)
 
 const actions = [
   {
@@ -20,8 +22,15 @@ const actions = [
     id: 'documentation',
     label: 'Documentation',
     description: 'Visit documentation to lean more about all features',
-    onClick: () => console.log('Documentation'),
+    onClick: () => window.open('https://d93iqs7wi77qf.cloudfront.net/0/8/C/08C47BD11ECB6BED05C4FA207F2E994F367F951D6E6B589D2B6E493F2DAA6059?response-content-disposition=inline%3b+filename*%3dutf-8%27%27habitr.pdf&response-content-type=application%2fpdf&Expires=1709263105&Signature=NUis4f4QRSESbUl6dAfQw8NLI6OB8~INsKqBohxXsQiaPREd5kVSVQmalXOK8OA3dFqaZJPcDUPrJ1RtwtR57kDGcErhFolaelXaUxm933fhKgXQTzYgCfjzFzMSLVMaajZOfrwwqqUieDr7x044nRF~WIjZITP4idFnPYCa8zk_&Key-Pair-Id=APKAJJI6DBUOTOT5FBTQ', '_blank'),
     leftSection: <IconFileText style={{ width: rem(24), height: rem(24) }} stroke={1.5} />,
+  },
+  {
+    id: 'my-habits',
+    label: 'My Habits',
+    description: 'View your habits',
+    onClick: () => setMyHabits(true),
+    leftSection: <IconDashboard style={{ width: rem(24), height: rem(24) }} stroke={1.5} />,
   },
   {
     id: 'habit-analysis',
@@ -66,6 +75,17 @@ const actions = [
     onClose={() => setHabitStruggleOpen(false)}
     >
       <HabitStruggle setHabitStruggleOpen={setHabitStruggleOpen}/>
+    </Modal>
+    <Modal 
+    fullScreen
+    transitionProps={{
+      transition: 'slide-up'
+    }}
+    withCloseButton={false}
+    opened={myHabits}
+    onClose={() => setMyHabits(false)}
+    >
+      <MyHabits setMyHabits={setMyHabits}/>
     </Modal>
     <Flex onClick={spotlight.open}
     align={'center'} justify={'space-between'} style={{
