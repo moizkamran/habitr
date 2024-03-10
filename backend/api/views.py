@@ -10,13 +10,34 @@ from .serializers import HabitSerializer, CreateHabitSerializer, UpdateHabitSeri
 from rest_framework.views import APIView
 
 class HabitView(generics.ListCreateAPIView):
+    """
+    API view to list and create habits.
+
+    This view prefetches related completion data for each habit to optimize performance
+    by reducing the number of database queries when accessing completion data.
+    """
+
     queryset = Habit.objects.prefetch_related('completions')  # Prefetch related completions
     serializer_class = HabitSerializer
 
 class CreateHabitView(APIView):
+    """
+    API view to create a new habit.
+    """
+
     serializer_class = CreateHabitSerializer
 
     def post(self, request, format=None):
+        """
+        Create a new habit.
+
+        Args:
+            request: Request object.
+            format: Format of the response data (default=None).
+
+        Returns:
+            Response containing information about the newly created habit.
+        """
         serializer = CreateHabitSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -24,18 +45,54 @@ class CreateHabitView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteHabitView(APIView):
-    serializer_class = DeleteHabitSerializer
+    """
+    API view to delete a habit.
+    """
 
     def delete(self, request, pk, format=None):
-        habit = Habit.objects.get(pk=pk)
+        """
+        Delete a habit.
+
+        Args:
+            request: Request object.
+            pk: Primary key of the habit to be deleted.
+            format: Format of the response data (default=None).
+
+        Returns:
+            Response indicating successful deletion of the habit.
+        """
+        try:
+            habit = Habit.objects.get(pk=pk)
+        except Habit.DoesNotExist:
+            return Response({"detail": "Habit not found."}, status=status.HTTP_404_NOT_FOUND)
+
         habit.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class UpdateHabitView(APIView):
+    """
+    API view to update a habit.
+    """
+
     serializer_class = UpdateHabitSerializer
 
     def put(self, request, pk, format=None):
-        habit = Habit.objects.get(pk=pk)
+        """
+        Update a habit.
+
+        Args:
+            request: Request object.
+            pk: Primary key of the habit to be updated.
+            format: Format of the response data (default=None).
+
+        Returns:
+            Response containing information about the updated habit.
+        """
+        try:
+            habit = Habit.objects.get(pk=pk)
+        except Habit.DoesNotExist:
+            return Response({"detail": "Habit not found."}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = UpdateHabitSerializer(habit, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -43,10 +100,29 @@ class UpdateHabitView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UpdateHabitStreakView(APIView):
+    """
+    API view to update a habit's streak.
+    """
+
     serializer_class = UpdateHabitStreakSerializer
 
     def put(self, request, pk, format=None):
-        habit = Habit.objects.get(pk=pk)
+        """
+        Update a habit's streak.
+
+        Args:
+            request: Request object.
+            pk: Primary key of the habit to be updated.
+            format: Format of the response data (default=None).
+
+        Returns:
+            Response containing information about the updated habit.
+        """
+        try:
+            habit = Habit.objects.get(pk=pk)
+        except Habit.DoesNotExist:
+            return Response({"detail": "Habit not found."}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = UpdateHabitStreakSerializer(habit, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -54,10 +130,29 @@ class UpdateHabitStreakView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class UpdateHabitCompletionView(APIView):
+    """
+    API view to update a habit completion.
+    """
+
     serializer_class = UpdateHabitCompletionSerializer
 
     def put(self, request, pk, format=None):
-        habit = Habit.objects.get(pk=pk)
+        """
+        Update a habit completion entry.
+
+        Args:
+            request: Request object.
+            pk: Primary key of the habit completion entry to be updated.
+            format: Format of the response data (default=None).
+
+        Returns:
+            Response containing information about the updated habit completion entry.
+        """
+        try:
+            habit = Habit.objects.get(pk=pk)
+        except Habit.DoesNotExist:
+            return Response({"detail": "Habit completion entry not found."}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = UpdateHabitCompletionSerializer(habit, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -65,9 +160,24 @@ class UpdateHabitCompletionView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class HabitCompletionView(generics.CreateAPIView):
+    """
+    API view to handle habit completion data.
+    """
+
     serializer_class = HabitCompletionSerializer
 
     def post(self, request, *args, **kwargs):
+        """
+        Create a new habit completion entry.
+
+        Args:
+            request: Request object.
+            args: Additional positional arguments.
+            kwargs: Additional keyword arguments.
+
+        Returns:
+            Response containing information about the newly created habit completion entry.
+        """
         habit_id = request.data.get('habit') 
         completion_date = request.data.get('completion_date')
 
@@ -88,17 +198,50 @@ class HabitCompletionView(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class HighestStreakHabitView(APIView):
+    """
+    API view to get the habit with the highest streak.
+    """
+
     def get(self, request, format=None):
-        # Query for the habit with the highest streak
+        """
+        Retrieve the habit with the highest streak.
+
+        Args:
+            request: Request object.
+            format: Format of the response data (default=None).
+
+        Returns:
+            Response containing information about the habit with the highest streak.
+        """
         try:
+            # Query for the habit with the highest streak
             highest_streak_habit = Habit.objects.latest('streak')
             serializer = HabitSerializer(highest_streak_habit)
             return Response(serializer.data)
         except Habit.DoesNotExist:
             return Response({"detail": "No habits found."}, status=status.HTTP_404_NOT_FOUND)
         
+
 class StruggledHabitByMonthView(APIView):
+    """
+    API view to get the habit that struggled the most in a given month and year.
+    """
+
     def get(self, request, month, year, format=None):
+        """
+        Retrieve the habit that struggled the most in the specified month and year.
+
+        Args:
+            request: Request object.
+            month (int): Month for which to retrieve the struggled habit.
+            year (int): Year for which to retrieve the struggled habit.
+            format: Format of the response data (default=None).
+
+        Returns:
+            Response containing information about the struggled habit, reason, overall completion rate,
+            struggled habit rank, number of habits, and number of habits with 100% completion rate.
+        """
+
         # Validate input month and year
         try:
             month = int(month)
@@ -112,7 +255,6 @@ class StruggledHabitByMonthView(APIView):
 
         # Query for habits active during the given month and year
         habits = Habit.objects.filter(start_date__lte=end_date, goal_date__gte=start_date)
-
 
         # Check if there are any habits available for the specified month and year
         if not habits:
@@ -136,7 +278,7 @@ class StruggledHabitByMonthView(APIView):
         struggled_habit, struggled_info = min(habit_completion_info.items(), key=lambda x: x[1]["completions"])
         struggled_habit_completions = struggled_info["completions"]
         struggled_habit_rate = struggled_info["rate"]
-        
+
         # Calculate the rank of the struggled habit among all habits
         struggled_habit_rank = sum(1 for habit_info in habit_completion_info.values() if habit_info["completions"] < struggled_habit_completions) + 1
 
@@ -157,6 +299,6 @@ class StruggledHabitByMonthView(APIView):
 
         # Serialize the struggled habit
         serializer = HabitSerializer(struggled_habit)
-        
+
         # Return the struggled habit along with the reason
         return Response({"habit": serializer.data, "reason": reason, "overall_completion_rate": overall_completion_rate, "struggled_habit_rank": struggled_habit_rank, "number_of_habits": number_of_habits, "number_of_habits_100": number_of_habits_100})
