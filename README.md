@@ -24,6 +24,12 @@ This is a Habit Tracker web application built using Django for the backend and R
   
 ## Installation
 
+### Quick Start (macOS only)
+1. In the `root` directory.
+2. Run `start.sh` using terminal
+3. This will auto check and install all dependencies needed to start the application.
+4. Once the requirements are met, it will auto start the backend on port `8080` and frontend on `5173`
+
 ### Backend Setup
 1. Navigate to the `backend` directory.
 2. Install Python dependencies using `pip install -r requirements.txt`.
