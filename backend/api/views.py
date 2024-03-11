@@ -266,8 +266,12 @@ class StruggledHabitByMonthView(APIView):
         # Loop through habits and calculate completion counts and rates within the specified month
         for habit in habits:
             completions_within_month = habit.completions.filter(completion_date__gte=start_date, completion_date__lte=end_date).count()
-            expected_days = (end_date - start_date).days + 1
-            completion_rate = completions_within_month / expected_days * 100 if expected_days > 0 else 0
+            if habit.frequency == 'daily':
+                expected_days = (habit.goal_date - habit.start_date).days + 1
+                completion_rate = (completions_within_month / expected_days) * 100 if expected_days > 0 else 0
+            elif habit.frequency == 'weekly':
+                expected_weeks = self.get_weeks_in_month(start_date.year, start_date.month)
+                completion_rate = (completions_within_month / expected_weeks) * 100 if expected_weeks > 0 else 0
             habit_completion_info[habit] = {"completions": completions_within_month, "rate": completion_rate}
 
         # Check if there are any completion info available
@@ -283,13 +287,18 @@ class StruggledHabitByMonthView(APIView):
         struggled_habit_rank = sum(1 for habit_info in habit_completion_info.values() if habit_info["completions"] < struggled_habit_completions) + 1
 
         # Create the reason for the most struggled habit
-        reason = f"The habit '{struggled_habit.name}' has the lowest completion count of {struggled_habit_completions} out of expected {expected_days}, thus a completion rate of {struggled_habit_rate:.2f}%. "
+        if struggled_habit.frequency == 'daily':
+            expected_days = (struggled_habit.goal_date - struggled_habit.start_date).days + 1
+            reason = f"The habit '{struggled_habit.name}' has the lowest completion count of {struggled_habit_completions} out of expected {expected_days}, thus a completion rate of {struggled_habit_rate:.2f}%. "
+        elif struggled_habit.frequency == 'weekly':
+            expected_weeks = self.get_weeks_in_month(start_date.year, start_date.month)
+            reason = f"The habit '{struggled_habit.name}' has the lowest completion count of {struggled_habit_completions} out of expected {expected_weeks}, thus a completion rate of {struggled_habit_rate:.2f}%. "
         reason += f"It ranked lowest of all of {len(habit_completion_info)} habits during the entire month."
 
         # Overall completion rate for the month
         overall_completions = sum(habit_info["completions"] for habit_info in habit_completion_info.values())
-        overall_expected_days = (end_date - start_date).days + 1
-        overall_completion_rate = overall_completions / overall_expected_days * 100 if overall_expected_days > 0 else 0
+        overall_expected_weeks = self.get_weeks_in_month(start_date.year, start_date.month)
+        overall_completion_rate = (overall_completions / overall_expected_weeks) * 100 if overall_expected_weeks > 0 else 0
 
         # Number of all habits
         number_of_habits = len(habit_completion_info)
@@ -301,4 +310,13 @@ class StruggledHabitByMonthView(APIView):
         serializer = HabitSerializer(struggled_habit)
 
         # Return the struggled habit along with the reason
-        return Response({"habit": serializer.data, "reason": reason, "overall_completion_rate": overall_completion_rate, "struggled_habit_rank": struggled_habit_rank, "number_of_habits": number_of_habits, "number_of_habits_100": number_of_habits_100})
+        return Response({"habit": serializer.data, "reason": reason, "overall_completion_rate": overall_completion_rate, "overall_completions" : overall_completions,
+        "struggled_habit_rank": struggled_habit_rank, "number_of_habits": number_of_habits, "number_of_habits_100": number_of_habits_100})
+
+    def get_weeks_in_month(self, year, month):
+        first_day = datetime(year, month, 1)
+        last_day = datetime(year, month, 1)
+        last_day = last_day.replace(day=28) + timedelta(days=4)  # Move to the last day of the month
+        last_day = last_day - timedelta(days=last_day.weekday())  # Move to the closest Saturday
+        weeks = (last_day - first_day).days // 7 + 1
+        return weeks
