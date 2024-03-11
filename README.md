@@ -64,6 +64,7 @@ This is a Habit Tracker web application built using Django for the backend and R
 ## Contributors
 
 - [Abdulmoeez Kamran](https://github.com/moizkamran)
+- [Prof. Max Pumperla] For Feedback & Testing!
 
 ## License
 
