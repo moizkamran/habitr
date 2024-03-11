@@ -160,7 +160,9 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
     //check if the habit's goal has been reached by checking if the streak is equal to the number of goal days, first calculate the number of days between the start date and the goal date
     const start_date = new Date(habit.start_date);
     const goal_date1 = new Date(habit.goal_date);
-    const goal_days = Math.floor((goal_date1 - start_date) / (1000 * 60 * 60 * 24));
+    const goal_days = Math.floor((goal_date1 - start_date) / (1000 * 60 * 60 * 24)) + 1;
+
+    const completion_dates_count = completions.length
 
     const handleMarkAsComplete = async () => {
         try {
@@ -174,7 +176,8 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
     }
 
     //if the streak is equal to the number of goal days, update the habit's completed field to true
-    if (streak === goal_days + 1) {
+    if (completion_dates_count === goal_days) {
+        console.log(`habit ${habit.name} has been completed, because the number of completion dates ${completion_dates_count} is equal to the number of goal days ${goal_days}`)
         //check if the habit has already been completed
         if (!habit.completed) {
             setCallForConfetti(true)
@@ -192,6 +195,21 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
 
     const handleCompletion = async () => {
         try {
+            //check if next addition will complete the habit, if yes then first update the habit's completed field to true
+            if (completion_dates_count + 1 === goal_days) {
+                console.log(`habit ${habit.name} will be completed, because the number of completion dates ${completion_dates_count + 1} is equal to the number of goal days ${goal_days}`)
+                //check if the habit has already been completed
+                if (!habit.completed) {
+                    setCallForConfetti(true)
+                    handleMarkAsComplete()
+                }
+                //wait for 5 seconds before setting the call for confetti to false
+                setTimeout(() => {
+                    setCallForConfetti(false)
+                }, 5000);
+                console.log('habit completed')
+            }
+
             const response = await axios.post(`http://localhost:8000/api/habit-completion`, {
                 habit: habit.id,
                 completion_date: formattedDate,
