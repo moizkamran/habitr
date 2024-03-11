@@ -1,3 +1,4 @@
+![Habitr Logo](https://i.ibb.co/tbHvzhD/d222.png)
 # Habit Tracker App
 
 This is a Habit Tracker web application built using Django for the backend and React for the frontend. The app allows users to create, update, and track their habits, providing insights into their completion rates and streaks.
@@ -20,7 +21,7 @@ This is a Habit Tracker web application built using Django for the backend and R
 - **Backend**:
   - Django
   - Django REST Framework
-  - PostgreSQL (assumed as database)
+  - SQLite (Database)
   
 ## Installation
 
@@ -33,8 +34,7 @@ This is a Habit Tracker web application built using Django for the backend and R
 ### Backend Setup
 1. Navigate to the `backend` directory.
 2. Install Python dependencies using `pip install -r requirements.txt`.
-3. Run Django migrations: `python manage.py migrate`.
-4. Start the Django development server: `python manage.py runserver`.
+3. Start the Django development server: `python manage.py runserver`.
 
 ### Frontend Setup
 1. Navigate to the `frontend` directory.
@@ -65,6 +65,7 @@ This is a Habit Tracker web application built using Django for the backend and R
 ## Contributors
 
 - [Abdulmoeez Kamran](https://github.com/moizkamran)
+- [Prof. Max Pumperla](https://github.com/maxpumperla) - For Feedback & Testing!
 
 ## License
 
