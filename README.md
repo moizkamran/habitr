@@ -20,7 +20,7 @@ This is a Habit Tracker web application built using Django for the backend and R
 - **Backend**:
   - Django
   - Django REST Framework
-  - PostgreSQL (assumed as database)
+  - SQLite (Database)
   
 ## Installation
 
