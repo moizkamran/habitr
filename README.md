@@ -1,4 +1,4 @@
-![Habitr Logo](https://i.ibb.co/VxkvV4C/habitr-white-solid.png)
+![Habitr Logo](https://i.ibb.co/tbHvzhD/d222.png)
 # Habit Tracker App
 
 This is a Habit Tracker web application built using Django for the backend and React for the frontend. The app allows users to create, update, and track their habits, providing insights into their completion rates and streaks.
