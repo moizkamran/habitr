@@ -33,8 +33,7 @@ This is a Habit Tracker web application built using Django for the backend and R
 ### Backend Setup
 1. Navigate to the `backend` directory.
 2. Install Python dependencies using `pip install -r requirements.txt`.
-3. Run Django migrations: `python manage.py migrate`.
-4. Start the Django development server: `python manage.py runserver`.
+3. Start the Django development server: `python manage.py runserver`.
 
 ### Frontend Setup
 1. Navigate to the `frontend` directory.
