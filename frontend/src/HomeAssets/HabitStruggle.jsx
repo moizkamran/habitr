@@ -185,7 +185,7 @@ const OverallProgress = ({ progress, totalHabits, numberOfHabitsCompleted }) => 
             }}
              mt={10}>
                 <Text fz={20} fw={600}>
-                    {progress.toFixed(1)}%
+                    {(numberOfHabitsCompleted / totalHabits * 100).toFixed(1)}%
                 </Text>
                 <Flex align={'center'}>
                     <Text>
