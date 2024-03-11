@@ -159,6 +159,7 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
 
     const streakBroken = sortedCompletions2.some((completion, index, completions) => {
         if (index === 0) return false;
+        //if frequency is weekly, then check if the difference between the dates is not equal to 7
         const completion_date = new Date(completion.completion_date);
         const prev_completion_date = new Date(completions[index - 1].completion_date);
         const diff = completion_date - prev_completion_date;
@@ -179,9 +180,31 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
     //check if the habit's goal has been reached by checking if the streak is equal to the number of goal days, first calculate the number of days between the start date and the goal date
     const start_date = new Date(habit.start_date);
     const goal_date1 = new Date(habit.goal_date);
-    const goal_days = Math.floor((goal_date1 - start_date) / (1000 * 60 * 60 * 24)) + 1;
+    
+    function getWeeksInMonth(year, month) {
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const numDays = lastDay.getDate();
+        const numWeeks = Math.ceil((numDays + firstDay.getDay()) / 7);
+        return numWeeks;
+    }
+    
+    let goal_days = 0;
+    
+    if (habit.frequency === 'daily') {
+        goal_days = Math.floor((goal_date1 - start_date) / (1000 * 60 * 60 * 24) + 1);
+    } else if (habit.frequency === 'weekly') {
+        const numWeeks = getWeeksInMonth(start_date.getFullYear(), start_date.getMonth());
+        goal_days = numWeeks;
+    } else if (habit.frequency === 'monthly') {
+        goal_days = Math.floor(((goal_date1 - start_date) / (1000 * 60 * 60 * 24) + 1) / 30);
+    }
+
 
     const completion_dates_count = completions.length
+    console.log(`There are ${getWeeksInMonth(start_date.getFullYear(), start_date.getMonth())} weeks in the month`)
+    console.log(`habit ${habit.name} has ${completion_dates_count} completion dates and the goal days is ${goal_days}`)
+
 
     const handleMarkAsComplete = async () => {
         try {
@@ -219,14 +242,33 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
                 console.log(`habit ${habit.name} will be completed, because the number of completion dates ${completion_dates_count + 1} is equal to the number of goal days ${goal_days}`)
                 //check if the habit has already been completed
                 if (!habit.completed) {
+                    await axios.put(`http://localhost:8000/api/update-habit-completion/${habit.id}`, {
+                        completed: true
+                    })
                     setCallForConfetti(true)
-                    handleMarkAsComplete()
                 }
                 //wait for 5 seconds before setting the call for confetti to false
                 setTimeout(() => {
                     setCallForConfetti(false)
                 }, 5000);
-                console.log('habit completed')
+                getHabits()
+                //check if the habit has been actually completed
+                //wait 1 second before checking if the habit has been completed
+                setTimeout(() => {
+                }, 1000);
+                if (habit.completed) {
+                    console.log('habit completed')
+                } else {
+                    try {
+                        axios.put(`http://localhost:8000/api/update-habit-completion/${habit.id}`, {
+                            completed: true
+                        })
+                        getHabits()
+                    }
+                    catch (error) {
+                        console.log(error)
+                    }
+                }
             }
 
             const response = await axios.post(`http://localhost:8000/api/habit-completion`, {
@@ -282,8 +324,16 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
                     </Text>
                     <IconCircleFilled size={5} color={'black'} />
                     <Text fz={15} c={'dimmed'}>
-                        {goal_days_left} days left
+                        {habit.type ? habit.type.charAt(0).toUpperCase() + habit.type.slice(1) : 'No type'}
                     </Text>
+                    <IconCircleFilled size={5} color={'black'} />
+                    {habit.frequency === 'daily' ? 
+                    (<Text fz={15} c={'dimmed'}>
+                        {goal_days_left} days left
+                    </Text>) : 
+                    (<Text fz={15} c={'dimmed'}>
+                        {goal_days_left} weeks left
+                    </Text>)}
                     {streak > 0 && (<>
                     <IconCircleFilled size={5} color={'black'} />
                     {streakBroken ? (<Text fz={15} c={'dimmed'}>

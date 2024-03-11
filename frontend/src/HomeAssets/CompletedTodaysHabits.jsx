@@ -105,6 +105,28 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
         }
     }
 
+    const start_date = new Date(habit.start_date);
+    const goal_date1 = new Date(habit.goal_date);
+
+    function getWeeksInMonth(year, month) {
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const numDays = lastDay.getDate();
+        const numWeeks = Math.ceil((numDays + firstDay.getDay()) / 7);
+        return numWeeks;
+    }
+    
+    let goal_days = 0;
+    
+    if (habit.frequency === 'daily') {
+        goal_days = Math.floor((goal_date1 - start_date) / (1000 * 60 * 60 * 24) + 1);
+    } else if (habit.frequency === 'weekly') {
+        const numWeeks = getWeeksInMonth(start_date.getFullYear(), start_date.getMonth());
+        goal_days = numWeeks;
+    } else if (habit.frequency === 'monthly') {
+        goal_days = Math.floor(((goal_date1 - start_date) / (1000 * 60 * 60 * 24) + 1) / 30);
+    }
+
   return (
     <Flex align={'center'} style={{
         border: '1px solid lightgrey',
@@ -135,9 +157,17 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
                     </Text>
                     <IconCircleFilled size={5} color={'black'} />
                     <Text fz={15} c={'dimmed'}>
-                        {goal_days_left} days left
+                        {habit.type ? habit.type.charAt(0).toUpperCase() + habit.type.slice(1) : 'No type'}
                     </Text>
-                    {streak > 0 && (<>
+                    <IconCircleFilled size={5} color={'black'} />
+                    {habit.frequency === 'daily' ? 
+                    (<Text fz={15} c={'dimmed'}>
+                        {goal_days_left} days left
+                    </Text>) : 
+                    (<Text fz={15} c={'dimmed'}>
+                        {goal_days} weeks left
+                    </Text>)}
+                    {streak > 0 && habit.frequency === 'daily' &&  (<>
                     <IconCircleFilled size={5} color={'black'} />
                     {streakBroken ? (<Text fz={15} c={'dimmed'}>
                     {streak} Streak Broken
