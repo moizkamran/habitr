@@ -150,6 +150,25 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
         }
     }, 0);
 
+    //check if the streak is broken by sorting the completions by date and then checking if the difference between the dates is not equal to 1
+    const sortedCompletions2 = completions.sort((a, b) => {
+        const dateA = new Date(a.completion_date);
+        const dateB = new Date(b.completion_date);
+        return dateA - dateB;
+    });
+
+    const streakBroken = sortedCompletions2.some((completion, index, completions) => {
+        if (index === 0) return false;
+        const completion_date = new Date(completion.completion_date);
+        const prev_completion_date = new Date(completions[index - 1].completion_date);
+        const diff = completion_date - prev_completion_date;
+        if (diff !== 86400000) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     //check if streak is equal to habit.streak, if not update habit.streak
     if (streak !== habit.streak) {
         axios.put(`http://localhost:8000/api/update-habit-streak/${habit.id}`, {
@@ -267,9 +286,11 @@ const SingleTask = ({ habit, getHabits, todaysDate, setCallForConfetti }) => {
                     </Text>
                     {streak > 0 && (<>
                     <IconCircleFilled size={5} color={'black'} />
-                    <Text fz={15} c={'dimmed'}>
-                    🔥 {streak} Streak
-                    </Text>
+                    {streakBroken ? (<Text fz={15} c={'dimmed'}>
+                    💔 Streak Broken
+                    </Text>) : (<Text fz={15} c={'dimmed'}>
+                    {streak} Streak
+                    </Text>)}
                     </>)}
                 </Flex>
             </Flex>

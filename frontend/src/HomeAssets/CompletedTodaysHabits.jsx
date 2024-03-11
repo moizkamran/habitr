@@ -72,6 +72,25 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
         }
     }, 0);
 
+    //check if the streak is broken by sorting the completions by date and then checking if the difference between the dates is not equal to 1
+    const sortedCompletions2 = completions.sort((a, b) => {
+        const dateA = new Date(a.completion_date);
+        const dateB = new Date(b.completion_date);
+        return dateA - dateB;
+    });
+
+    const streakBroken = sortedCompletions2.some((completion, index, completions) => {
+        if (index === 0) return false;
+        const completion_date = new Date(completion.completion_date);
+        const prev_completion_date = new Date(completions[index - 1].completion_date);
+        const diff = completion_date - prev_completion_date;
+        if (diff !== 86400000) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     const goal_date = new Date(habit.goal_date)
     const goal_days_left = Math.floor((goal_date - todaysDate) / (1000 * 60 * 60 * 24))
     const handleDeleteHabit = async () => {
@@ -120,9 +139,11 @@ const SingleTask = ({ habit, getHabits, todaysDate }) => {
                     </Text>
                     {streak > 0 && (<>
                     <IconCircleFilled size={5} color={'black'} />
-                    <Text fz={15} c={'dimmed'}>
-                    🔥 {streak} Streak
-                    </Text>
+                    {streakBroken ? (<Text fz={15} c={'dimmed'}>
+                    {streak} Streak Broken
+                    </Text>) : (<Text fz={15} c={'dimmed'}>
+                    {streak} Streak
+                    </Text>)}
                     </>)}
                 </Flex>
             </Flex>
